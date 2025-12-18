@@ -69,4 +69,4 @@ plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 
 plt.savefig('pareto.png')
 plt.close()
-print("Saved image to \"pareto.png\"")
+print("Saved image to \"figures/pareto.png\"")

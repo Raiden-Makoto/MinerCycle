@@ -1,5 +1,6 @@
 # this script visualizes our novel discovered materials on the pareto plot
 import pandas as pd
+import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -30,6 +31,23 @@ for _, row in densities.iterrows():
         max_stiffness = row['bulk_modulus']
 
 pareto_df = pd.DataFrame(pareto_boundary)
+
+# Calculate how close each candidate is to the Pareto Front
+def get_pareto_optimality_score(candidate_row, pareto_df):
+    # Find the max stiffness for the candidate's density on the red line
+    # We interpolate the red line to find the "Limit" at exactly this density
+    limit_at_density = np.interp(candidate_row['pred_density'], pareto_df['density'], pareto_df['bulk_modulus'])
+    
+    # Score = (Our Stiffness) / (Theoretical Max Stiffness at this density)
+    return (candidate_row['pred_bulk_modulus'] / limit_at_density) * 100
+
+# Calculate and print optimality scores
+print("\n--- OPTIMALITY SCORE (How close to perfection?) ---")
+top_candidates = top10.head(10)  # Get top 10 for scoring
+for i, row in top_candidates.iterrows():
+    score = get_pareto_optimality_score(row, pareto_df)
+    print(f"{row['formula']}: {score:.1f}% of the Theoretical Limit")
+print()
 
 # Plot the Data
 plt.figure(figsize=(12, 8))
@@ -88,4 +106,4 @@ plt.grid(True, linestyle=':', alpha=0.6)
 
 plt.tight_layout()
 plt.savefig("portfolio_plot.png")
-print("Plot saved to \"portfolio_plot.png\"")
+print("Plot saved to \"figures/portfolio_plot.png\"")
