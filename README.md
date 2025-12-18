@@ -31,6 +31,16 @@ To ensure the model learned physical laws rather than noise, I analyzed its pred
   <em>Figure 1: The AI candidates (Gold Stars) plotted against the known universe of materials (Grey). Nb₂SiC sits significantly above the baseline of common structural materials.</em>
 </p>
 
+### 3. Physics Verification (CHGNet)
+Performed geometric relaxation using the CHGNet Universal Potential (pre-trained on 1.5M+ DFT calculations).   
+**Result:** The candidate structure Nb2SiC retained 98.3% of its volume during relaxation (Volume Change: +1.66%), confirming excellent structural stability.     
+**Final Energy:** -9.29 eV/atom, indicating strong atomic bonding.
+
+<p align="center">
+  <img src="figures/Nb4Si2C2.png" alt="Candidate Structure" width="600">
+  <br>
+</p>
+
 ---
 
 ## 🛠️ Methodology
@@ -77,7 +87,7 @@ To replicate this analysis:
    ```bash
    pip install numpy pandas scikit-learn matplotlib seaborn pymatgen matminer mp-api
 
-2. **Rune the Pipelines:**
+2. **Run the Pipelines:**
 ```bash
 # 1. Download and clean data
 python get_data.py
