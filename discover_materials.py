@@ -37,7 +37,7 @@ if __name__ == '__main__':
     )
     model.fit(X_features, y_data)
     print("Model trained successfully!")
-    joblib.dump(model, 'regressor.joblib')
+    joblib.dump(model, 'models/regressor.joblib')
     print("Model saved to \"models/regressor.joblib\"")
     print()
     
@@ -45,4 +45,5 @@ if __name__ == '__main__':
     clf = RandomForestClassifier(n_estimators=100, random_state=67)
     clf.fit(X_features, y_stability)
     print("Trained Stability Predictor.")
+    joblib.dump(clf, 'models/stability.joblib')
     print("Model saved to \"models/stability.joblib\"")

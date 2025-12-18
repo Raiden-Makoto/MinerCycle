@@ -9,14 +9,17 @@ from matminer.featurizers.conversions import StrToComposition #type: ignore
 from matminer.featurizers.composition import ElementProperty #type: ignore
 
 if __name__ == '__main__':
-    filename = 'regressor.joblib'
+    reg_filename = 'models/regressor.joblib'
+    clf_filename = 'models/stability.joblib'
     try: 
-        model = joblib.load(filename)
-        print("Model loaded successfully")
+        model = joblib.load(reg_filename)
+        clf = joblib.load(clf_filename)
+        print("Models loaded successfully")
     except Exception as e:
         print("An exception occurred.")
         traceback.print_exc()
         model = None
+        clf = None
 
     # MAX Candidates (M = Transition Metal, A = Group 13/14, X = Carbon/Nitrogen)
     M_list = ['Ti', 'V', 'Cr', 'Zr', 'Nb', 'Mo', 'Hf', 'Ta', 'W']
@@ -37,22 +40,25 @@ if __name__ == '__main__':
 
     print("Predicting properties...")
     predictions = model.predict(X_cand)
+    stability = clf.predict_proba(X_cand)
     print("Predictions completed successfully.")
 
     df_candidates['pred_bulk_modulus'] = predictions[:, 0]
     df_candidates['pred_density'] = predictions[:, 1]
+    df_candidates['stability'] = stability[:, 1] * 100
 
     # Calculate "Specific Stiffness" (Stiffness / Density)
     df_candidates['specific_stiffness'] = df_candidates['pred_bulk_modulus'] / df_candidates['pred_density']
+    df_candidates = df_candidates[df_candidates['stability'] > 67]
     top_candidates = df_candidates.sort_values('specific_stiffness', ascending=False).head(10)
 
     print("----------------------------------------------------------")
-    print("TOP 6 DISCOVERED MATERIALS (Ranked by Specific Stiffness)")
+    print("TOP 6 STABLE DISCOVERED MATERIALS (Ranked by Specific Stiffness)")
     print("----------------------------------------------------------")
-    output_cols = ['formula', 'pred_bulk_modulus', 'pred_density', 'specific_stiffness']
+    output_cols = ['formula', 'pred_bulk_modulus', 'pred_density', 'specific_stiffness', 'stability']
     print(top_candidates[output_cols].to_string(index=False, float_format="%.2f"))
 
     df_candidates.to_csv(
         'candidates.csv',
-        columns=['formula', 'pred_bulk_modulus', 'pred_density']
+        columns=['formula', 'pred_bulk_modulus', 'pred_density', 'stability']
     )
