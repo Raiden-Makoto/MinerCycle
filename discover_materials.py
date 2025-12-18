@@ -6,7 +6,7 @@ warnings.filterwarnings('ignore')
 from matminer.featurizers.conversions import StrToComposition #type: ignore
 from matminer.featurizers.composition import ElementProperty #type: ignore
 
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.multioutput import MultiOutputRegressor
 
 import joblib
@@ -16,6 +16,7 @@ if __name__ == '__main__':
     target_properties = ['bulk_modulus', 'density']
 
     y_data = data[target_properties]
+    y_stability = data['is_stable'].astype(int)
 
     # calculate X data via featurizers
     print("Featurizing Dataset (this may take several minutes)...")
@@ -37,4 +38,11 @@ if __name__ == '__main__':
     model.fit(X_features, y_data)
     print("Model trained successfully!")
     joblib.dump(model, 'regressor.joblib')
-    print("Model saved to \"regressor.joblib\"")
+    print("Model saved to \"models/regressor.joblib\"")
+    print()
+    
+    print("Training Stability Predictor.")
+    clf = RandomForestClassifier(n_estimators=100, random_state=67)
+    clf.fit(X_features, y_stability)
+    print("Trained Stability Predictor.")
+    print("Model saved to \"models/stability.joblib\"")
