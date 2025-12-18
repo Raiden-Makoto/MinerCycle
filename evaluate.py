@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # MAX Candidates (M = Transition Metal, A = Group 13/14, X = Carbon/Nitrogen)
     M_list = ['Ti', 'V', 'Cr', 'Zr', 'Nb', 'Mo', 'Hf', 'Ta', 'W']
     A_list = ['Al', 'Si', 'P', 'S', 'Ga', 'Ge', 'In', 'Sn']
-    X_list = ['C', 'N']
+    X_list = ['C', 'N', 'B'] # added boron
 
     print("Generating MAX Composites.")
     candidates = [f"{m}2{a}{x}" for m, a, x in itertools.product(M_list, A_list, X_list)]
@@ -96,8 +96,8 @@ if __name__ == '__main__':
         # Drop the 'exists_in_db' column before saving
         novel_candidates = novel_candidates.drop(columns=['exists_in_db'])
         novel_candidates.to_csv(
-            'candidates.csv',
-            columns=['formula', 'pred_bulk_modulus', 'pred_density', 'stability'],
+            'data/candidates.csv',
+            columns=['formula', 'pred_bulk_modulus', 'pred_density', 'stability', 'specific_stiffness'],
             index=False
         )
         print(f"\nSaved {len(novel_candidates)} novel candidates to 'candidates.csv'")
