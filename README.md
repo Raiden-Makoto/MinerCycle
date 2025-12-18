@@ -99,7 +99,3 @@ python evaluate.py
 # 3. Visualize results
 python visualize.py
 ```
-
-## Future Considerations
-1. DFT Confirmation: Perform rigorous Quantum Mechanical calculations (VASP/Quantum Espresso) on the Nb₂SiC structure to confirm the ML predictions  
-2. Synthesizability Analysis: Integrate a GAN (Generative Adversarial Network) to predict synthesis pathways.
