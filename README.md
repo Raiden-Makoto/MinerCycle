@@ -31,15 +31,24 @@ To ensure the model learned physical laws rather than noise, I analyzed its pred
   <em>Figure 1: The AI candidates (Gold Stars) plotted against the known universe of materials (Grey). Nb₂SiC sits significantly above the baseline of common structural materials.</em>
 </p>
 
-### 3. Physics Verification (CHGNet)
-Performed geometric relaxation using the CHGNet Universal Potential (pre-trained on 1.5M+ DFT calculations).   
-**Result:** The candidate structure Nb2SiC retained 98.3% of its volume during relaxation (Volume Change: +1.66%), confirming excellent structural stability.     
-**Final Energy:** -9.29 eV/atom, indicating strong atomic bonding.
+### 🧪 3. Thermodynamics & Synthesis Verification
+
+To validate the ML predictions, I performed **Density Functional Theory (DFT) surrogate calculations** using the **CHGNet Universal Potential** (pre-trained on 1.5M+ quantum calculations).
+
+* **Geometric Stability:** The crystal structure retained **98.3%** of its volume during relaxation (Volume Change: +1.66%), indicating excellent structural integrity.
 
 <p align="center">
   <img src="figures/Nb4Si2C2.png" alt="Candidate Structure" width="600">
   <br>
 </p>
+
+* **Reaction Energetics:** I calculated the formation energy ($\Delta H_f$) from elemental precursors:
+    $$2\text{Nb} + \text{Si} + \text{C} \rightarrow \text{Nb}_2\text{SiC}$$
+    * **Result:** $\Delta H_f = \mathbf{-2.647 \text{ eV/f.u.}}$ (Exothermic).
+    * **Implication:** There is a strong thermodynamic driving force for synthesis.
+* **Proposed Synthesis:** Based on a comparative literature analysis of homologous Niobium-based MAX phases (specifically `Nb2AlC` and `Nb4AlC3`), the recommended synthesis pathway is **Reactive Hot Pressing at 1600°C** (Argon atmosphere, 30 MPa).
+    * *Rationale:* Niobium's high melting point (2477°C) requires significantly higher sintering temperatures than standard Titanium MAX phases (typically 1400°C).
+
 
 ---
 
@@ -98,4 +107,9 @@ python evaluate.py
 
 # 3. Visualize results
 python visualize.py
+
+# 4. Calculate Reaction Pathway
+cd chgnet_scripts
+python physics.py
+python reaction.py
 ```
