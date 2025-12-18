@@ -3,10 +3,22 @@ import traceback
 import itertools
 import pandas as pd
 import warnings
+import os
+from dotenv import load_dotenv
+from mp_api.client import MPRester #type: ignore
+
 warnings.filterwarnings('ignore')
 
 from matminer.featurizers.conversions import StrToComposition #type: ignore
 from matminer.featurizers.composition import ElementProperty #type: ignore
+
+def check_material_exists(formula, mpr):
+    """Check if a material exists in the Materials Project database."""
+    docs = mpr.materials.summary.search(
+        formula=formula,
+        fields=["material_id", "formula_pretty", "is_stable", "energy_above_hull"]
+    )
+    return len(docs) > 0
 
 if __name__ == '__main__':
     reg_filename = 'models/regressor.joblib'
@@ -50,15 +62,44 @@ if __name__ == '__main__':
     # Calculate "Specific Stiffness" (Stiffness / Density)
     df_candidates['specific_stiffness'] = df_candidates['pred_bulk_modulus'] / df_candidates['pred_density']
     df_candidates = df_candidates[df_candidates['stability'] > 67]
-    top_candidates = df_candidates.sort_values('specific_stiffness', ascending=False).head(10)
-
-    print("----------------------------------------------------------")
-    print("TOP 6 STABLE DISCOVERED MATERIALS (Ranked by Specific Stiffness)")
-    print("----------------------------------------------------------")
-    output_cols = ['formula', 'pred_bulk_modulus', 'pred_density', 'specific_stiffness', 'stability']
-    print(top_candidates[output_cols].to_string(index=False, float_format="%.2f"))
-
-    df_candidates.to_csv(
-        'candidates.csv',
-        columns=['formula', 'pred_bulk_modulus', 'pred_density', 'stability']
-    )
+    
+    print(f"\nFiltering out materials that already exist in Materials Project database...")
+    print(f"Checking {len(df_candidates)} candidates...")
+    
+    # Check which candidates already exist in the database
+    load_dotenv()
+    api_key = os.getenv("MATERIALS_API_KEY")
+    
+    exists_in_db = []
+    with MPRester(api_key) as mpr:
+        for idx, formula in enumerate(df_candidates['formula']):
+            if (idx + 1) % 10 == 0:
+                print(f"  Checked {idx + 1}/{len(df_candidates)} candidates...")
+            exists = check_material_exists(formula, mpr)
+            exists_in_db.append(exists)
+    
+    df_candidates['exists_in_db'] = exists_in_db
+    novel_candidates = df_candidates[df_candidates['exists_in_db'] == False].copy()
+    
+    print(f"\nFound {len(df_candidates) - len(novel_candidates)} materials that already exist.")
+    print(f"Remaining novel candidates: {len(novel_candidates)}")
+    
+    if len(novel_candidates) > 0:
+        top_candidates = novel_candidates.sort_values('specific_stiffness', ascending=False).head(10)
+        
+        print("\n----------------------------------------------------------")
+        print("TOP 10 NOVEL STABLE DISCOVERED MATERIALS (Ranked by Specific Stiffness)")
+        print("----------------------------------------------------------")
+        output_cols = ['formula', 'pred_bulk_modulus', 'pred_density', 'specific_stiffness', 'stability']
+        print(top_candidates[output_cols].to_string(index=False, float_format="%.2f"))
+        
+        # Drop the 'exists_in_db' column before saving
+        novel_candidates = novel_candidates.drop(columns=['exists_in_db'])
+        novel_candidates.to_csv(
+            'candidates.csv',
+            columns=['formula', 'pred_bulk_modulus', 'pred_density', 'stability'],
+            index=False
+        )
+        print(f"\nSaved {len(novel_candidates)} novel candidates to 'candidates.csv'")
+    else:
+        print("\nNo novel candidates found. All materials already exist in the database.")
