@@ -57,5 +57,5 @@ print(f"Loaded {len(df)} materials from original dataset.")
 # Clean invalid elements
 df['invalid_elements'] = df['formula'].apply(is_invalid)
 df_clean = df[df['invalid_elements'] == False].drop(columns=['invalid_elements'])
-df_clean.to_csv('data/materials_cleaned.csv', index=False)
-print(f"Saved {len(df_clean)} cleaned materials.")
+df_clean.to_csv('materials_cleaned.csv', index=False)
+print(f"Saved {len(df_clean)} cleaned materials to 'materials_cleaned.csv'.")

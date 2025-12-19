@@ -21,8 +21,12 @@ def check_material_exists(formula, mpr):
     return len(docs) > 0
 
 if __name__ == '__main__':
-    reg_filename = 'models/regressor.joblib'
-    clf_filename = 'models/stability.joblib'
+    # Get paths relative to this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    reg_filename = os.path.join(project_root, 'models', 'regressor.joblib')
+    clf_filename = os.path.join(project_root, 'models', 'stability.joblib')
+    candidates_path = os.path.join(project_root, 'data', 'candidates.csv')
     try: 
         model = joblib.load(reg_filename)
         clf = joblib.load(clf_filename)
@@ -96,10 +100,10 @@ if __name__ == '__main__':
         # Drop the 'exists_in_db' column before saving
         novel_candidates = novel_candidates.drop(columns=['exists_in_db'])
         novel_candidates.to_csv(
-            'data/candidates.csv',
+            candidates_path,
             columns=['formula', 'pred_bulk_modulus', 'pred_density', 'stability', 'specific_stiffness'],
             index=False
         )
-        print(f"\nSaved {len(novel_candidates)} novel candidates to 'candidates.csv'")
+        print(f"\nSaved {len(novel_candidates)} novel candidates to '{candidates_path}'")
     else:
         print("\nNo novel candidates found. All materials already exist in the database.")

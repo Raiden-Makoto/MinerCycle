@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns #type: ignore
 
-df = pd.read_csv('materials.csv')
+df = pd.read_csv('../data/materials_cleaned.csv')
 
 # remove diamond because it is an extreme outlier
 df = df[(df["bulk_modulus"] < 600) & (df["density"] < 15)]
@@ -67,6 +67,6 @@ plt.title('Material Discovery: Stiffness vs. Density Trade-off', fontsize=16)
 plt.legend(fontsize=12)
 plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 
-plt.savefig('pareto.png')
+plt.savefig('../figures/pareto.png')
 plt.close()
 print("Saved image to \"figures/pareto.png\"")

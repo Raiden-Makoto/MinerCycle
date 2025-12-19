@@ -16,13 +16,13 @@ chgnet = CHGNet.load()
 # Get the path relative to this script file
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(script_dir)
-cif_path = os.path.join(project_root, "figures", "Nb2SiC_relaxed.cif")
+cif_path = os.path.join(project_root, "geometry", "Nb2SiC_relaxed.cif")
 
 try:
     nb2sic = Structure.from_file(cif_path)
 except FileNotFoundError:
     print(f"Error: Nb2SiC_relaxed.cif not found at {cif_path}")
-    print("Run the previous script (physics.py) first!")
+    print("Run the previous script (alchemy.py) first!")
     raise SystemExit(1)
 
 # B. The Ingredients: We create simple crystals for pure elements

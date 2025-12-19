@@ -1,13 +1,10 @@
 import os
 
 from ase.optimize import BFGS
-from chgnet.model.dynamics import MolecularDynamics
 from chgnet.model.dynamics import StructOptimizer
 from chgnet.model.model import CHGNet
 from dotenv import load_dotenv
 from mp_api.client import MPRester
-from pymatgen.core import Structure
-from pymatgen.io.ase import AseAtomsAdaptor
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -57,7 +54,7 @@ print(f"Volume Change: {vol_change:.2f}%")
 
 if abs(vol_change) < 10:
     print("✅ RESULT: Structure is STABLE! (It held its shape)")
-    final_structure.to(filename="../figures/Nb2SiC_relaxed.cif")
-    print("\tSaved structure to 'Nb2SiC_relaxed.cif'. You can view this in VESTA.")
+    final_structure.to(filename="../geometry/Nb2SiC_relaxed.cif")
+    print("\tSaved structure to 'geometry/Nb2SiC_relaxed.cif'. You can view this in VESTA.")
 else:
     print("❌ RESULT: Structure collapsed or expanded too much. Likely unstable.")

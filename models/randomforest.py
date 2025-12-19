@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import warnings
 
@@ -12,7 +13,12 @@ from sklearn.multioutput import MultiOutputRegressor
 import joblib
 
 if __name__ == '__main__':
-    data = pd.read_csv('materials_cleaned.csv')
+    # Get paths relative to this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    data_path = os.path.join(project_root, 'data', 'materials_cleaned.csv')
+    
+    data = pd.read_csv(data_path)
     target_properties = ['bulk_modulus', 'density']
 
     y_data = data[target_properties]
@@ -37,13 +43,15 @@ if __name__ == '__main__':
     )
     model.fit(X_features, y_data)
     print("Model trained successfully!")
-    joblib.dump(model, 'models/regressor.joblib')
-    print("Model saved to \"models/regressor.joblib\"")
+    regressor_path = os.path.join(script_dir, 'regressor.joblib')
+    joblib.dump(model, regressor_path)
+    print(f"Model saved to \"{regressor_path}\"")
     print()
     
     print("Training Stability Predictor.")
     clf = RandomForestClassifier(n_estimators=100, random_state=67)
     clf.fit(X_features, y_stability)
     print("Trained Stability Predictor.")
-    joblib.dump(clf, 'models/stability.joblib')
-    print("Model saved to \"models/stability.joblib\"")
+    stability_path = os.path.join(script_dir, 'stability.joblib')
+    joblib.dump(clf, stability_path)
+    print(f"Model saved to \"{stability_path}\"")

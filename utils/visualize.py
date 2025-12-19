@@ -1,23 +1,28 @@
 # this script visualizes our novel discovered materials on the pareto plot
+import os
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+# Get paths relative to this script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir)
+
 try:
-    materials = 'data/materials_cleaned.csv'
-    df = pd.read_csv(materials)
+    materials_path = os.path.join(project_root, 'data', 'materials_cleaned.csv')
+    df = pd.read_csv(materials_path)
     df = df[(df['bulk_modulus'] < 450) & (df['density'] < 12)]
 except FileNotFoundError:
-    print(f"File Not Found: {materials}")
+    print(f"File Not Found: {materials_path}")
     raise SystemExit(1)
 
 try:
-    candidates = 'data/candidates.csv'
-    cand = pd.read_csv(candidates)
+    candidates_path = os.path.join(project_root, 'data', 'candidates.csv')
+    cand = pd.read_csv(candidates_path)
     top10 = cand.sort_values('specific_stiffness', ascending=False)
 except FileNotFoundError:
-    print(f"File Not Found: {candidates}")
+    print(f"File Not Found: {candidates_path}")
     raise SystemExit(1)
 
 # Calculate the Pareto Front
@@ -105,5 +110,6 @@ plt.legend(loc='upper left', frameon=True, framealpha=0.9)
 plt.grid(True, linestyle=':', alpha=0.6)
 
 plt.tight_layout()
-plt.savefig("portfolio_plot.png")
-print("Plot saved to \"figures/portfolio_plot.png\"")
+figures_path = os.path.join(project_root, 'figures', 'portfolio_plot.png')
+plt.savefig(figures_path)
+print(f"Plot saved to \"{figures_path}\"")
